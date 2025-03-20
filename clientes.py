@@ -1,13 +1,15 @@
 import libreria
+from colorama import Fore, Back, Style, init
+init()
 
 def insertar ( codigo ):
     libreria.limpiarPantalla()
     print("*** INSERTAR CLIENTE ***")
     print("*" * 30)
     print(f"CÓDIGO: {codigo}")
-    identificacion = input("NRO. IDENTIFICACIÓN: ")
-    nombres = input("NOMBRE: ")
-    fechaNacimiento = input("FECHA NACIMIENTO (aaaa-mm-dd): ")
+    identificacion  = libreria.leerCadena( "NRO. IDENTIFICACIÓN: ", 20 ).upper() #input("NRO. IDENTIFICACIÓN: ")
+    nombres         = libreria.leerCadena( "NOMBRE: ", 100 ).capitalize()        #input("NOMBRE: ")
+    fechaNacimiento = libreria.leerFecha("FECHA NACIMIENTO (YYYY-MM-DD): ")
     direccion = input("DIRECCIÓN: ")
     telefonos = input("TELEFONOS: ")
     mail = libreria.leerMail("MAIL: ")
@@ -19,7 +21,7 @@ def insertar ( codigo ):
 filename = "clientes.dat"
 cliente = []   #Lista una solo vendedor
 clientes = []  #Lista de Listas, muchos vendedores
-encabezado = ["Código", "Identificación", "Nombres", "Nacimiento", "Dirección", "Telefonos", "Mail"]
+encabezado = [Fore.GREEN + Style.BRIGHT + "Código", "Identificación", "Nombres", "Nacimiento", "Dirección", "Telefonos", "Mail" + Style.RESET_ALL]
 
 clientes = libreria.cargar(clientes, filename)
 

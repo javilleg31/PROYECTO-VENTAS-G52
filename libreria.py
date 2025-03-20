@@ -4,6 +4,7 @@ from tabulate import tabulate
 from colorama import Fore, Back, Style, init
 import re
 import pickle
+from datetime import datetime
 
 init()
 
@@ -15,7 +16,58 @@ def LeerCaracter (mensaje):
   print(mensaje, end="", flush=True)
   return msvcrt.getch().lower().decode('utf-8')  #getch captura un solo caracter No hay que dar enter
 
+##############################################################################################
+# Función que valida el ingreso de una cadena que no sea vacia y limitar un maximo caracteres#
+##############################################################################################
+def leerCadena( mensaje, maximoCaracteres ):
+    while True:
+        #print(f"{mensaje}", end="", flush=True)
+        cadena = input( f"{mensaje} (Máx. {maximoCaracteres} caracteres): ").strip()
+        if 0 < len(cadena) <= maximoCaracteres:  #Retorna la cadena válida
+           return cadena
+        else:
+            print(f"❌ Error: La cadena no debe estar vacía y debe tener máximo {maximoCaracteres} caracteres.", end="", flush=True)
+            time.sleep(1)                 # Pausa breve de 1 segundo)
+            print("\r\033[K", end="")     # \r Mueve cursor al inicio de la línea y limpia la línea con \033[K
+            print("\033[F\033[K", end="") # Mueve cursor al final de la línea de arriba y limpia la línea
+            continue
+        
+############################################################################
+# Función que valida el ingreso de la fecha en un formatro y rango correcto#
+############################################################################
+def leerFecha( mensaje ):
+    while True:
+        #print(f"{mensaje}", end="", flush=True)
+        fecha_str = input( mensaje )
+        try:
+            fecha = datetime.strptime(fecha_str, "%Y-%m-%d")
+            return fecha.strftime("%Y-%m-%d")  #fecha  # Retorna un objeto datetime (fecha y hora)
+        except ValueError:
+            print("❌ Error: Formato incorrecto. Intente de nuevo.", end="", flush=True)
+            time.sleep(1)                 # Pausa breve de 1 segundo)
+            print("\r\033[K", end="")     # \r Mueve cursor al inicio de la línea y limpia la línea con \033[K
+            print("\033[F\033[K", end="") # Mueve cursor al final de la línea de arriba y limpia la línea
+            continue
 
+############################################################################
+# Función que valida el ingreso del mail en un formatro correcto           #
+############################################################################
+def leerMail ( mensaje ):
+      while True:
+          #print(f"{mensaje}", end="", flush=True) 
+          email = input ( mensaje )
+          #correo valido verifica antes y despues del @
+          patron = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'          
+          if re.match(patron, email.lower()):
+            return email
+          else:
+            print("Error: Email NO es correcto", end="", flush=True)
+            time.sleep(1) # Pausa breve de 1 segundo
+            print(end="\r\033[K\033[F") # Mueve el cursor al inicio de la linea y limpia la línea
+
+############################################################################
+# Función que valida el ingreso de un decimal en un rango minimo y maximo  #
+############################################################################
 def  leerFlotante (mensaje, minimo, maximo):
   while True:
     print(f"{mensaje} ({minimo}-{maximo}): ", end="", flush=True)
@@ -96,25 +148,12 @@ def listar(encabezado, listas):
     # Formatear columnas de numeros que no salga exponencial
     limpiarPantalla()
     headers = encabezado
-    #headers =[Fore.GREEN + 'PLACA', 'MARCA', 'MODELO', 'COLOR', 'PRECIO' + Style.RESET_ALL]
+    #headers =[Fore.GREEN + 'PLACA', 'MARCA', 'MODELO', 'COLOR', 'PRECIO' ]
     print(tabulate(listas,
                    headers = headers,
                    tablefmt='fancy_grid',
                    stralign='left',
                    floatfmt=",.0f"))
-
-def leerMail ( mensaje ):
-      while True:
-          print(f"{mensaje}", end="", flush=True) 
-          email = input(mensaje)
-          #correo valido verifica antes y despues del @
-          patron = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'          
-          if re.match(patron, email.lower()):
-            return email
-          else:
-            print("Error: Email NO es correcto", end="", flush=True)
-            time.sleep(1) # Pausa breve de 1 segundo
-            print(end="\r\033[K\033[F") # Mueve el cursor al inicio de la linea y limpia la línea
 
 #-----------------------------------------------------------#
 # Función para buscar elemento en lista por su codigo PK,   #
@@ -154,3 +193,4 @@ def cargar(lista, filename):
         print(""+Fore.RED+"\n>>> Error al cargar el archivo o no se ha creado: "+filename+''+Style.RESET_ALL)
         time.sleep(1)
     return lista
+
