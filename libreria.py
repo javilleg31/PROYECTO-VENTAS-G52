@@ -18,6 +18,7 @@ def LeerCaracter (mensaje):
 
 ##############################################################################################
 # Función que valida el ingreso de una cadena que no sea vacia y limitar un maximo caracteres#
+# SI se quiere que retorne recortado usar return cadena[:maximoCaracteres]
 ##############################################################################################
 def leerCadena( mensaje, maximoCaracteres ):
     while True:
