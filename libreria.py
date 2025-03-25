@@ -11,7 +11,9 @@ init()
 import time 
 import msvcrt
 
-#función lee un solo carácter NO espera ENTER
+###############################################
+#función lee un solo carácter NO espera ENTER #
+###############################################
 def LeerCaracter (mensaje):
   print(mensaje, end="", flush=True)
   return msvcrt.getch().lower().decode('utf-8')  #getch captura un solo caracter No hay que dar enter
@@ -25,7 +27,7 @@ def leerCadena( mensaje, maximoCaracteres ):
         #print(f"{mensaje}", end="", flush=True)
         cadena = input( f"{mensaje} (Máx. {maximoCaracteres} caracteres): ").strip()
         if 0 < len(cadena) <= maximoCaracteres:  #Retorna la cadena válida
-           return cadena
+           return cadena[:maximoCaracteres] #cadena
         else:
             print(f"❌ Error: La cadena no debe estar vacía y debe tener máximo {maximoCaracteres} caracteres.", end="", flush=True)
             time.sleep(1)                 # Pausa breve de 1 segundo)
@@ -34,7 +36,7 @@ def leerCadena( mensaje, maximoCaracteres ):
             continue
         
 ############################################################################
-# Función que valida el ingreso de la fecha en un formatro y rango correcto#
+# Función que valida el ingreso de la fecha en un formato y rango correcto #
 ############################################################################
 def leerFecha( mensaje ):
     while True:
@@ -76,24 +78,24 @@ def  leerFlotante (mensaje, minimo, maximo):
     # Verificar que no esté vacío ni tenga espacios intermedios
     if not valor or " " in valor:
       print(f"❌Error: {mensaje} no debe estar vacío ni contener espacios.", end="", flush=True)
-      time.sleep(1)              # Pausa breve de 1 segundo)
-      print("\r\033[K", end="")  # \r Mueve cursor al inicio de la línea y limpia la línea con \033[K
+      time.sleep(1)                 # Pausa breve de 1 segundo)
+      print("\r\033[K", end="")     # \r Mueve cursor al inicio de la línea y limpia la línea con \033[K
       print("\033[F\033[K", end="") # Mueve cursor al final de la línea de arriba y limpia la línea
       continue
-    # Verificar si es un número decimal válido
+      # Verificar si es un número decimal válido
     try:
       numero = float(valor)
       if minimo <= numero <= maximo:  # numero >= minimo and numero <= maximo
         return numero
       else:
         print(f"❌Error: {mensaje} debe estar entre {minimo} y {maximo}.", end="", flush=True)
-        time.sleep(1) # Pausa breve de 1 segundo
-        print("\r\033[K", end="")       # Mueve cursor al inicio de la línea y limpia la línea
+        time.sleep(1)                 # Pausa breve de 1 segundo
+        print("\r\033[K", end="")     # Mueve cursor al inicio de la línea y limpia la línea
         print("\033[F\033[K", end="") # Mueve cursor al final de la línea de arriba y limpia la línea
     except ValueError:
       print("❌Error: {mensaje} inválida. ", end="", flush=True)
-      time.sleep(1)                      # Pausa breve de 1 segundo
-      print("\r\033[K", end="")       # Mueve cursor al inicio de la línea y limpia la línea
+      time.sleep(1)                 # Pausa breve de 1 segundo
+      print("\r\033[K", end="")     # Mueve cursor al inicio de la línea y limpia la línea
       print("\033[F\033[K", end="") # Mueve cursor al final de la línea de arriba y limpia la línea
 
 #La función devuelve el nombre del sistema operativo y aplica el comando respectivo
@@ -155,7 +157,20 @@ def listar(encabezado, listas):
                    tablefmt='fancy_grid',
                    stralign='left',
                    floatfmt=",.0f"))
-
+#-------------------------------------------------------------------------------------#
+# Función Mostrar un solo registro, con la cabecera y los datos de la entidad enviada #
+#-------------------------------------------------------------------------------------#
+def mostrar(encabezado, lista): 
+    os.system('cls')
+    # Formatear columnas de numeros que no salga exponencial
+    lista = [lista]   #CONVERTIMOS A LISTA DE LISTAS POR QUE TABULATE LO EXIGE
+    headers = encabezado; #dependiendo de la entidad, se envian por parametro
+    print(tabulate(lista,
+                   headers = headers,
+                   tablefmt='fancy_grid',
+                   stralign='left',
+                   floatfmt=",.0f"))
+    
 #-----------------------------------------------------------#
 # Función para buscar elemento en lista por su codigo PK,   #
 # devolver indice si lo encuentra o -1 si no lo encuentra   #
@@ -187,11 +202,11 @@ def cargar(lista, filename):
         archivo = open(filename, 'rb')   #R se abre solo para lectura y B indica que un archivo binario
         lista = pickle.load(archivo)
         archivo.close()
-        print(""+Fore.RED+"\n>>> Cargando Información : "+filename+''+Style.RESET_ALL)
+        print("" + Fore.RED+"\n>>> Cargando Información : "+filename + '' + Style.RESET_ALL)
         time.sleep(1)
         return lista
     except:
-        print(""+Fore.RED+"\n>>> Error al cargar el archivo o no se ha creado: "+filename+''+Style.RESET_ALL)
+        print("" + Fore.RED+"\n>>> Error al cargar el archivo o no se ha creado: " + filename + '' + Style.RESET_ALL)
         time.sleep(1)
     return lista
 
