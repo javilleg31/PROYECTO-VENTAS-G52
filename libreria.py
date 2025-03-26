@@ -11,6 +11,23 @@ init()
 import time 
 import msvcrt
 
+#-------------------------------------------------------------------#
+#recibe un diccionario lo muestra y validad la opcion del usuario   #
+#VALIDA que sea un valor numerio en el rango enviado por parametro  #
+#-------------------------------------------------------------------#
+def leerDiccionario (diccionario, mensaje):            
+      tabla = [[clave, descripcion] for clave, descripcion in diccionario.items()]
+      print(tabulate(tabla, headers=["Clave", "Descripción"], tablefmt="fancy_grid"))
+      while True:
+          opcion = LeerCaracter( mensaje ).upper()
+          if opcion in diccionario:
+                return opcion
+          else:
+            print("Error: Opción NO válida", end="", flush=True)
+            time.sleep(1) # Pausa breve de 1 segundo
+            print(end="\r\033[K") # Mueve el cursor al inicio de la linea y limpia la línea
+
+
 ###############################################
 #función lee un solo carácter NO espera ENTER #
 ###############################################
