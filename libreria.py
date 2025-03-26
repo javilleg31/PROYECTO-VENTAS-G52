@@ -88,6 +88,36 @@ def leerMail ( mensaje ):
 ############################################################################
 # Función que valida el ingreso de un decimal en un rango minimo y maximo  #
 ############################################################################
+def  leerEntero (mensaje, minimo, maximo):
+  while True:
+    print(f"{mensaje} ({minimo}-{maximo}): ", end="", flush=True)
+    valor = input().strip()
+    # Verificar que no esté vacío ni tenga espacios intermedios
+    if not valor or " " in valor:
+      print(f"❌Error: {mensaje} no debe estar vacío ni contener espacios.", end="", flush=True)
+      time.sleep(1)                 # Pausa breve de 1 segundo)
+      print("\r\033[K", end="")     # \r Mueve cursor al inicio de la línea y limpia la línea con \033[K
+      print("\033[F\033[K", end="") # Mueve cursor al final de la línea de arriba y limpia la línea
+      continue
+      # Verificar si es un número decimal válido
+    try:
+      numero = int(valor)
+      if minimo <= numero <= maximo:  # numero >= minimo and numero <= maximo
+        return numero
+      else:
+        print(f"❌Error: {mensaje} debe estar entre {minimo} y {maximo}.", end="", flush=True)
+        time.sleep(1)                 # Pausa breve de 1 segundo
+        print("\r\033[K", end="")     # Mueve cursor al inicio de la línea y limpia la línea
+        print("\033[F\033[K", end="") # Mueve cursor al final de la línea de arriba y limpia la línea
+    except ValueError:
+      print("❌Error: {mensaje} inválida. ", end="", flush=True)
+      time.sleep(1)                 # Pausa breve de 1 segundo
+      print("\r\033[K", end="")     # Mueve cursor al inicio de la línea y limpia la línea
+      print("\033[F\033[K", end="") # Mueve cursor al final de la línea de arriba y limpia la línea
+
+############################################################################
+# Función que valida el ingreso de un decimal en un rango minimo y maximo  #
+############################################################################
 def  leerFlotante (mensaje, minimo, maximo):
   while True:
     print(f"{mensaje} ({minimo}-{maximo}): ", end="", flush=True)
