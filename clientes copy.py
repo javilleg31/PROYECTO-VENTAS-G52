@@ -1,9 +1,41 @@
 import libreria
 import os
-import sys
 from tabulate import tabulate
 from colorama import Fore, Back, Style, init
 init()
+
+from reportlab.lib.pagesizes import landscape, letter
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+from reportlab.lib import colors
+
+def generarPDF (encabezado, clientes):
+    # Combinar encabezado con datos
+    contenido = [encabezado] + clientes
+
+    # Configurar el documento PDF
+    nombre_pdf = "clientes.pdf"
+    pdf = SimpleDocTemplate(nombre_pdf, pagesize=landscape(letter))
+
+    # Crear tabla
+    tabla = Table(contenido)
+    tabla.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),  # Fondo gris para cabecera
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),  # Texto blanco para cabecera
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),  # Alineación centrada
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),  # Fuente en negrita para cabecera
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 10),  # Espaciado en cabecera
+        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),  # Fondo beige para datos
+        ('GRID', (0, 0), (-1, -1), 1, colors.black)  # Líneas de la tabla
+    ]))
+
+    # Agregar la tabla al PDF
+    elementos = [tabla]
+    pdf.build(elementos)
+
+    # Abrir el PDF generado
+    os.startfile(nombre_pdf)  # En Windows
+    # En MacOS/Linux puedes usar `os.system(f"open {nombre_pdf}")
+
 
 #-----------------------------------------------------------#
 #Función con las opciones del CRUD para cualquier entidad   #
@@ -74,10 +106,6 @@ def insertar ( codigo ):
 #VARIABLES GLOBALES Y CONSTANTES
 rutaDirectorio = "datos/"
 nombreArchivo   = os.path.join(rutaDirectorio, 'clientes.dat')
-
-directorio_pdf = "reportesPDF"
-archivo_pdf = os.path.join(directorio_pdf, "clientes.pdf") 
-
 #nombreArchivo   = "clientes.dat"
 
 diccionarioEstados = {
@@ -89,7 +117,6 @@ diccionarioEstados = {
 cliente    = []  #Lista una solo cliente
 clientes   = []  #Lista de Listas, muchos clientes
 encabezado = [Fore.GREEN + Style.BRIGHT + "Código", "Identificación", "Nombres", "Nacimiento", "Dirección", "Telefonos", "Mail", "Estado" + Style.RESET_ALL]
-anchoColumnas = [60, 70, 125, 100, 100, 100, 120, 50]
 
 clientes = libreria.cargar(clientes, nombreArchivo)
 
@@ -113,10 +140,9 @@ while True:
             mensaje = " SIN INFORMACIÓN PARA LISTAR "
             if (clientes):
                 libreria.listar(encabezado, clientes)
-                respuesta = libreria.LeerCaracter("Imprimir PDF (Si-No): ").upper()
+                respuesta = libreria.LeerCaracter("Imprimir PDF (Si-No)").upper()
                 if respuesta == 'S':
-                    libreria.generarPDF (encabezado, clientes, anchoColumnas, archivo_pdf)
-                    libreria.abrirPDF (archivo_pdf)
+                    generarPDF (encabezado, clientes)
                 mensaje = "\U00002705 FIN DE LISTAR <ENTER> Continuar"
             libreria.mensajeEsperaEnter( mensaje )
         case '3':           

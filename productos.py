@@ -33,16 +33,15 @@ def actualizar(encabezado, producto):
             case '5':
                 producto[5] = libreria.leerEntero("Descuento(%): ", 0, 50)
             case '6':
-                producto[6] = 'A'
+                producto[6] = libreria.leerDiccionario (diccionarioEstados, "Estado: ")
             case '7':
                 producto[7] = libreria.leerFecha("Fecha Vencimiento (YYYY-MM-DD): ")
             case '8':
                 return producto
             case _:
                 libreria.mensajeErrorEsperaSegundos("OPCION NO VALIDA", 1)
-          
-
-
+         
+#SE leen los datos de la entidad, se arma una lista o registro, y se retorna
 def insertar( codigo ):
     libreria.limpiarPantalla()
     print("*** INSERTAR CLIENTE ***")
@@ -64,6 +63,12 @@ def insertar( codigo ):
 
 #VARIABLES GLOBALES
 MAXIMO_IVA = 20
+
+diccionarioEstados = {
+    'A': "Activa",
+    'I': "Inactivo"
+}
+
 encabezado = ['Código', 'Nombre', 'Precio Unitario', 'Existencias', 'IVA', 'Descuento', 'estado', 'Fecha Vencimiento']
 producto  = []
 productos = []

@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 from tabulate import tabulate
 from colorama import Fore, Back, Style, init
@@ -6,6 +7,10 @@ import re
 import pickle
 from datetime import datetime
 
+from reportlab.lib.pagesizes import letter, landscape
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Spacer, Image
+from reportlab.lib import colors
+from reportlab.lib.units import inch
 init()
 
 import time 
@@ -256,4 +261,98 @@ def cargar(lista, filename):
         print("" + Fore.RED+"\n>>> Error al cargar el archivo o no se ha creado: " + filename + '' + Style.RESET_ALL)
         time.sleep(1)
     return lista
+
+#GENERA Y ABRE LOS PDF GENERADOS
+
+
+def abrirPDF( archivo_pdf):
+    #directorio = "reportesPDF"
+    #archivo_pdf = os.path.join(directorio, "clientes.pdf") 
+    try:
+        if sys.platform == "win32":  # Windows
+            os.startfile(archivo_pdf)
+        elif sys.platform == "darwin":  # macOS
+            os.system(f"open {archivo_pdf}")
+        elif sys.platform.startswith("linux"):  # Linux
+            os.system(f"xdg-open {archivo_pdf}")
+        else:
+            print("⚠ No se pudo abrir el PDF automáticamente.")
+    except Exception as e:
+        print(f"❌ Error al abrir el PDF: {e}")
+
+
+# Función para generar PDF con logo y tabla ajustada
+def generarPDF (encabezado, clientes, anchoColumnas, archivo_pdf):
+
+    # Márgenes y ajuste extra para margen visual
+    margen = 28
+    extra_margen_visual = 10  # Espacio extra visual
+    ancho_total = 792  
+    ancho_util = (ancho_total - (2 * margen)) - (2 * extra_margen_visual)
+
+    doc = SimpleDocTemplate(archivo_pdf, pagesize=landscape(letter),
+                            leftMargin=margen, rightMargin=margen,
+                            topMargin=margen, bottomMargin=margen)
+
+    elementos = []
+
+    # Agregar logo alineado a la izquierda
+    logo_path = "imagenes/logo.jpg"  # Asegúrate de que este archivo está en la misma carpeta
+    #logo = Image(logo_path, width=1.5 * inch, height=1 * inch)  # Tamaño ajustado del logo
+    #elementos.append(logo)
+    try:
+        img = Image(logo_path, width=1.5 * inch, height=0.75 * inch)  # Ajusta el tamaño del logo
+        img.hAlign = 'RIGHT'  # Alinea a la derecha
+        elementos.append(img)
+    except:
+        print("⚠️ No se encontró el logo, el PDF se generará sin él.")
+
+    # Espaciado antes del título
+    elementos.append(Spacer(1, 10))
+
+    # Título centrado con espacio arriba
+    titulo = [["LISTADO DE CLIENTES"]]
+    tabla_titulo = Table(titulo, colWidths=[ancho_util])
+    tabla_titulo.setStyle(TableStyle([
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, -1), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, -1), 16),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 16),
+    ]))
+    elementos.append(tabla_titulo)
+
+    # Nueva versión de cabeceras más cortas
+    #datos = [["Código", "Identif.", "Nombres", "Nacimiento", "Dirección", "Teléfonos", "Email", "Estado"]]
+    datos = [encabezado]
+    datos.extend(clientes)
+
+    # Distribución del ancho
+    #col_widths = [60, 70, 125, 100, 100, 100, 120, 50]
+    col_widths = anchoColumnas 
+
+    tabla = Table(datos, colWidths=col_widths)
+
+    # Estilos de la tabla
+    tabla.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, -1), 10),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 10),
+        ('TOPPADDING', (0, 0), (-1, -1), 6),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+        ('LEFTPADDING', (0, 0), (-1, -1), 6),
+        ('RIGHTPADDING', (0, 0), (-1, -1), 6),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+    ]))
+    
+    elementos.append(tabla)
+
+    # Generar el PDF
+    doc.build(elementos)
+    print(f"PDF generado correctamente con membrete y logo: {archivo_pdf}")
+
+
 
