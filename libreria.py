@@ -16,6 +16,19 @@ init()
 import time 
 import msvcrt
 
+#valida que un codigo se encuentre en un diccionario
+def leerCodigoValidado (lista, mensaje):
+      while True:
+          print(f"{mensaje}", end="", flush=True)
+          codigoBuscar = input().upper()
+          encontrado = buscar(lista, codigoBuscar)
+          if encontrado >= 0:
+            return codigoBuscar, encontrado
+          else:
+            print("Error: Código NO existe", end="", flush=True)
+            time.sleep(1) # Pausa breve de 1 segundo
+            print(end="\r\033[K\033[F") # Mueve el cursor al inicio de la linea y limpia la línea
+            
 #-------------------------------------------------------------------#
 #recibe un diccionario lo muestra y validad la opcion del usuario   #
 #VALIDA que sea un valor numerio en el rango enviado por parametro  #
