@@ -68,7 +68,7 @@ diccionarioEstados = {
     'A': "Activa",
     'I': "Inactivo"
 }
-
+                #0         1              2                3          4         5          6             7
 encabezado = ['Código', 'Nombre', 'Precio Unitario', 'Existencias', 'IVA', 'Descuento', 'estado', 'Fecha Vencimiento']
 producto  = []
 productos = []

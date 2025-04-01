@@ -8,6 +8,65 @@ from tabulate import tabulate
 from colorama import Fore, Back, Style, init
 init()
 
+def mostrarFacturaCompleta(encabezadoFactura, encabezadoDetalle, listaFactura, listaDetalles): 
+    os.system('cls')
+    # Formatear columnas de numeros que no salga exponencial
+    lista = [listaFactura]   #CONVERTIMOS A LISTA DE LISTAS POR QUE TABULATE LO EXIGE
+    #headers = encabezado; #dependiendo de la entidad, se envian por parametro
+    print (Fore.YELLOW + "******** CABECERA DE LA FACTURA DE VENTA ********" + Style.RESET_ALL)
+    print(tabulate(
+                   lista,
+                   headers = encabezadoFactura,
+                   tablefmt='fancy_grid',
+                   stralign='left',
+                   floatfmt=",.0f")
+                   )
+    
+    print (Fore.YELLOW + "******** DETALLE DE LA FACTURA ********" + Style.RESET_ALL)
+    print(tabulate(listaDetalles,
+                   headers = encabezadoDetalle,
+                   tablefmt='fancy_grid',
+                   stralign='left',
+                   floatfmt=",.0f"))
+    
+def actualizarExistenciasProducto (detallesEstaFactura, productos):  
+    #global productos     
+    for productoEstaFactura in detallesEstaFactura:
+        codigoProducto  = productoEstaFactura[1] 
+        cantidadVendida = productoEstaFactura[3]
+        posicion = libreria.buscar(productos, codigoProducto)
+        producto = productos[posicion]
+        producto[3] = producto[3] - cantidadVendida   #resto de las existencias
+        productos[posicion] = producto
+    return productos
+
+         
+
+def venderProductos ( numeroFactura, productos ):
+    detalleEstaFactura  = []
+    detallesEstaFactura = []
+    #             0         1           2                  3           4        5           
+    #PRODUCTO['Código', 'Nombre', 'Precio Unitario', 'Existencias', 'IVA', 'Descuento', 'estado', 'Fecha Vencimiento']
+    #DETALLE ['Nro.Factura', 'Código Producto', 'Precio Unitario', 'Cantidad', 'IVA', 'Descuento', 'total']
+    while True:
+        print("*** DETALLE DE LA FACTURA ", numeroFactura)
+        #libreria.mostrar(encabezado, factura)
+        codigoProducto, posicionProducto = libreria.leerCodigoValidado(productos, "Código Producto: ")
+        producto = productos[posicionProducto]
+        print(f"Nombre: {producto[1]} Precio Unitario: {producto[2]} Existencias: {producto[3]} IVA: {producto[4]} Descuento: {producto[5]} %")
+        #maximo_productos = producto[3]    
+        cantidad = libreria.leerEntero("Cantidad: ", 1, producto[3])
+        precioUnidad = producto[2]
+        pagoIva   = cantidad * precioUnidad * (producto[4] / 100)  #IVA del producto inicial
+        descuento = cantidad * precioUnidad * (producto[5] / 100)  #DESCUENTO 
+        total     = cantidad * precioUnidad + pagoIva - descuento
+        detalleEstaFactura = [numeroFactura, codigoProducto, precioUnidad, cantidad, pagoIva, descuento, total]
+        detallesEstaFactura.append (detalleEstaFactura)
+        respuesta = libreria.LeerCaracter("Otro Producto (Si-No): ").upper()
+        if respuesta != 'S':
+            return detallesEstaFactura
+    
+
 def insertar ( numeroFactura, codigoCliente, codigoVendedor ):
     libreria.limpiarPantalla()
     print("*** NUEVA FACTURA ***")
@@ -20,8 +79,9 @@ def insertar ( numeroFactura, codigoCliente, codigoVendedor ):
     formaPago  = libreria.leerDiccionario (diccionarioFormaPagos, "Forma de Pago: ")
     estado     = 'A'
     totalIVA   = 0
+    totalDescuento = 0
     totalFactura = 0
-    factura = [numeroFactura, codigoVendedor, codigoCliente, fecha, formaPago, estado, totalIVA, totalFactura]
+    factura = [numeroFactura, codigoVendedor, codigoCliente, fecha, formaPago, estado, totalIVA, totalDescuento, totalFactura]
 
     return factura
 
@@ -44,7 +104,13 @@ diccionarioFormaPagos = {
 #ESTRUCTURAS DE DATOS A UTILIZAR 
 factura    = []  #Lista una solo vendedor
 facturas   = []  #Lista de Listas, muchos vendedores
-encabezado = [Fore.GREEN + Style.BRIGHT + "NRO.Factura", "Vendedor", "Cliente", "Fecha", "Forma Pago", "Estado", "Total IVA", "Total Factura" + Style.RESET_ALL]
+encabezado = [Fore.GREEN + Style.BRIGHT + "NRO.Factura", "Vendedor", "Cliente", "Fecha", "Forma Pago", "Estado", "Total IVA", "Total Descuentos", "Total Factura" + Style.RESET_ALL]
+
+#ESTRUCTURAS DE DATOS productos 
+encabezadoDetalle = ['Nro.Factura', 'Código Producto', 'Precio Unitario', 'Cantidad', 'IVA', 'Descuento', 'total']
+detalle  = []
+detalles = []
+
 
 #estructuras para el cliente
 cliente    = []  #Lista una solo cliente
@@ -56,15 +122,23 @@ vendedor    = []  #Lista una solo vendedor
 vendedores   = []  #Lista de Listas, muchos vendedores
 encabezadoVendedor = [Fore.GREEN + Style.BRIGHT + "Código", "Identificación", "Nombres", "Nacimiento", "Dirección", "Telefonos", "Mail", "Estado", "Salario" + Style.RESET_ALL]
 
+#ESTRUCTURAS DE DATOS productos 
+encabezadoProducto = ['Código', 'Nombre', 'Precio Unitario', 'Existencias', 'IVA', 'Descuento', 'estado', 'Fecha Vencimiento']
+producto  = []
+productos = []
+
 rutaDirectorio = "datos/"
 nombreArchivo   = os.path.join(rutaDirectorio, 'facturas.dat')
 nombreArchivoCliente   = os.path.join(rutaDirectorio, 'clientes.dat')
 nombreArchivoVendedor  = os.path.join(rutaDirectorio, 'vendedores.dat')
-
+nombreArchivoProductos = os.path.join(rutaDirectorio, 'productos.dat')
+nombreArchivoDetalles  = os.path.join(rutaDirectorio, 'detalles.dat')
 
 facturas   = libreria.cargar(facturas, nombreArchivo)
 clientes   = libreria.cargar(clientes, nombreArchivoCliente)
 vendedores = libreria.cargar(vendedores, nombreArchivoVendedor)
+productos  = libreria.cargar(productos, nombreArchivoProductos)
+detalles   = libreria.cargar(detalles, nombreArchivoDetalles)
 
 #INICIO DEL PROGRAMA
 def menu():
@@ -74,6 +148,7 @@ def menu():
         opcion = libreria.LeerCaracter("OPCION: ")
         match opcion:
             case '1': 
+                global productos
                 codigoCliente, posicionCliente = libreria.leerCodigoValidado(clientes, "Código Cliente: ")
                 #posicionCliente = libreria.buscar(clientes, codigoCliente)
                 mensaje = "ERROR: CLIENTE NO EXISTE"
@@ -91,9 +166,23 @@ def menu():
                         mensaje = "ERROR: FACTURA DUPLICADA"
                         if (posicion < 0):
                             factura = insertar( facturaBuscar, codigoCliente, codigoVendedor)
-                            facturas.append(factura)
-                            mensaje = "FACTURA CREADA"
-                            libreria.guardar(facturas, nombreArchivo)
+                            #construir el datalle de la factura
+                            detallesEstaFactura = venderProductos ( facturaBuscar, productos )  #factura[0]
+                            if detallesEstaFactura:
+                                #solamente se guarda la factura si tiene productos vendidos
+                                factura[6] = sum( fila[4]  for fila in detallesEstaFactura)   #total iva
+                                factura[7] = sum( fila[5]  for fila in detallesEstaFactura)   #Total descuento
+                                factura[8] = sum( fila[6]  for fila in detallesEstaFactura)   #totalFactura
+                                facturas.append(factura)
+                                mensaje = "FACTURA CREADA"
+                                libreria.guardar(facturas, nombreArchivo)
+                                for detalle in detallesEstaFactura:
+                                    detalles.append(detalle)
+                                libreria.guardar(detalles, nombreArchivoDetalles)
+                                productos = actualizarExistenciasProducto (detallesEstaFactura, productos)
+                                libreria.guardar(productos, nombreArchivoProductos)
+                                mostrarFacturaCompleta(encabezado, encabezadoDetalle, factura, detallesEstaFactura)
+                                input()
                 libreria.mensajeErrorEsperaSegundos(mensaje, 1)
             case '2': 
                 mensaje = "AVISO: SIN FACTURAS PARA LISTAR"
