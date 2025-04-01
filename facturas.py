@@ -1,5 +1,11 @@
 
 
+from reportlab.lib.pagesizes import letter, landscape
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Spacer, Image, Paragraph
+from reportlab.lib import colors
+from reportlab.lib.units import inch
+from reportlab.lib.styles import getSampleStyleSheet
+
 import libreria
 import os
 import sys
@@ -7,6 +13,92 @@ from datetime import date
 from tabulate import tabulate
 from colorama import Fore, Back, Style, init
 init()
+
+# Función para generar el PDF
+def generar_pdf_factura(factura_info, cliente_info, detalle_factura):
+    directorio = "reportesPDF"
+    archivo_pdf = os.path.join(directorio, "factura.pdf") 
+
+    #archivo_pdf = "Factura.pdf"
+    doc = SimpleDocTemplate(archivo_pdf, pagesize=landscape(letter),
+                            leftMargin=30, rightMargin=30,
+                            topMargin=30, bottomMargin=30)
+    elementos = []
+
+    # Agregar el logo en la parte superior derecha
+    logo_path = "imagenes/logo.jpg"  # Asegúrate de que el archivo existe en la misma carpeta
+    try:
+        logo = Image(logo_path, width=1.5 * inch, height=0.7 * inch)
+        logo.hAlign = 'RIGHT'
+        elementos.append(logo)
+    except:
+        print("⚠️ No se encontró el logo. Se generará sin él.")
+
+    # Espaciado después del logo
+    elementos.append(Spacer(1, 10))
+
+    # Agregar título de la factura
+    estilo = getSampleStyleSheet()
+    titulo = Paragraph("<b>FACTURA DE VENTA</b>", estilo["Title"])
+    elementos.append(titulo)
+    elementos.append(Spacer(1, 12))
+
+    # Sección: Datos de la Factura
+    tabla_factura = Table([factura_info], colWidths=[120, 200])
+    tabla_factura.setStyle(TableStyle([
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
+        ('TEXTCOLOR', (0, 0), (-1, -1), colors.black),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+        ('FONTSIZE', (0, 0), (-1, -1), 10),
+        ('LEFTPADDING', (0, 0), (-1, -1), 6),
+        ('RIGHTPADDING', (0, 0), (-1, -1), 6),
+    ]))
+    elementos.append(tabla_factura)
+    elementos.append(Spacer(1, 12))
+
+    # Sección: Datos del Cliente
+    tabla_cliente = Table([cliente_info], colWidths=[120, 300])
+    tabla_cliente.setStyle(TableStyle([
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
+        ('TEXTCOLOR', (0, 0), (-1, -1), colors.black),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+        ('FONTSIZE', (0, 0), (-1, -1), 10),
+        ('LEFTPADDING', (0, 0), (-1, -1), 6),
+        ('RIGHTPADDING', (0, 0), (-1, -1), 6),
+    ]))
+    elementos.append(tabla_cliente)
+    elementos.append(Spacer(1, 12))
+
+    # Sección: Detalle de la Factura
+    tabla_detalle = Table(detalle_factura, colWidths=[100, 120, 120, 60, 80, 120])
+    tabla_detalle.setStyle(TableStyle([
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ('BACKGROUND', (0, 0), (-1, 0), colors.green),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+        ('FONTSIZE', (0, 0), (-1, -1), 10),
+        ('LEFTPADDING', (0, 0), (-1, -1), 6),
+        ('RIGHTPADDING', (0, 0), (-1, -1), 6),
+    ]))
+    elementos.append(tabla_detalle)
+
+    # Generar el PDF
+    doc.build(elementos)
+    print(f"✅ PDF generado correctamente: {archivo_pdf}")
+
+# Función para consultar la factura por su número
+def armarDetallesFactura (numeroFactura, detalles):
+    detallesAux = []
+    for indice, registro in enumerate(detalles):   #recorre toda la lista y extrae registro a registro con su indice
+        if str(registro[0]).upper() == str(numeroFactura).upper():
+            detallesAux.append(registro)
+    return detallesAux
 
 def mostrarFacturaCompleta(encabezadoFactura, encabezadoDetalle, listaFactura, listaDetalles): 
     os.system('cls')
@@ -140,6 +232,9 @@ vendedores = libreria.cargar(vendedores, nombreArchivoVendedor)
 productos  = libreria.cargar(productos, nombreArchivoProductos)
 detalles   = libreria.cargar(detalles, nombreArchivoDetalles)
 
+directorio_pdf = "reportesPDF"
+archivo_pdf = os.path.join(directorio_pdf, "factura.pdf")
+
 #INICIO DEL PROGRAMA
 def menu():
     while True:
@@ -190,8 +285,25 @@ def menu():
                     libreria.listar(encabezado, facturas)
                     mensaje = "FIN DE LISTAR"
                 libreria.mensajeEsperaEnter(mensaje)
-            case '3':  
-                input()
+            case '3': #USUARIO SELECCIONA CONSULTAR
+                codigoBuscar = input("\n\nCODIGO A CONSULTAR: ").upper()
+                encontrado = libreria.buscar(facturas, codigoBuscar)
+                mensaje = "NO SE ENCUENTRA"
+                if  encontrado >= 0:
+                    factura = facturas[encontrado]                    
+                    detallesEstaFactura = armarDetallesFactura(codigoBuscar, detalles)
+                    mostrarFacturaCompleta(encabezado, encabezadoDetalle, factura, detallesEstaFactura)
+                    respuesta = libreria.LeerCaracter("Imprimir PDF (SÍ-NO): ").upper()
+                    if respuesta == 'S':
+                        #anchoColumnas = [60, 70, 125, 100, 100, 100, 120, 50]
+                        posicionCliente = libreria.buscar(clientes, factura[2])
+                        cliente = clientes[posicionCliente]
+                        generar_pdf_factura(factura, cliente, detallesEstaFactura)
+                        libreria.abrirPDF (archivo_pdf)
+
+                    mensaje = ">><FIN DE CONSULTAR >>>"
+
+                libreria.mensajeEsperaEnter("Continuar <ENTER>")
             case '4':
                 input()
             case '5': 

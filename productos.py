@@ -78,68 +78,71 @@ nombreArchivo   = os.path.join(rutaDirectorio, 'productos.dat')
 
 productos = libreria.cargar(productos, nombreArchivo)
 
-while True:
-    libreria.menuCrud( "PRODUCTOS" )
-    opcion = libreria.LeerCaracter("OPCIÓN:")
-    match opcion:
-        case '1':
-            codigoBuscar = libreria.leerCadena("Código:", 10).upper()
-            posicion = libreria.buscar(productos, codigoBuscar)
-            mensaje = "NO SE PERMITE DUPLICADOS " + codigoBuscar
-            if (posicion < 0):
-                producto = insertar( codigoBuscar )
-                productos.append(producto)
-                libreria.guardar(productos, nombreArchivo)
-                mensaje = "INSERTADO CORRECTAMENTE "
-            libreria.mensajeErrorEsperaSegundos(mensaje, 1)
-        case '2':
-            mensaje = "SIN REGISTROS PARA MOSTRAR " 
-            if (productos):
-                libreria.listar(encabezado, productos)
-                mensaje = "FIN DE LISTAR " 
-            libreria.mensajeEsperaEnter( mensaje )
-        case '3':
-            mensaje = "SIN REGISTROS PARA MOSTRAR " 
-            if (productos):
-                codigoBuscar = libreria.leerCadena("Código:", 10)
+def menu():
+    while True:
+        libreria.menuCrud( "PRODUCTOS" )
+        opcion = libreria.LeerCaracter("OPCIÓN:")
+        match opcion:
+            case '1':
+                codigoBuscar = libreria.leerCadena("Código:", 10).upper()
                 posicion = libreria.buscar(productos, codigoBuscar)
-                mensaje = "NO SE ENCONTRADO " + codigoBuscar
-                if (posicion >= 0):
-                    producto = productos[posicion]
-                    libreria.mostrar(encabezado, producto)
-                    mensaje = "FIN DE CONSULTAR "
-            libreria.mensajeEsperaEnter( mensaje )
-        case '4':
-            mensaje = "SIN REGISTROS PARA MOSTRAR " 
-            if (productos):
-                codigoBuscar = libreria.leerCadena("Código:", 10)
-                posicion = libreria.buscar(productos, codigoBuscar)
-                mensaje = "NO SE ENCONTRADO " + codigoBuscar
-                if (posicion >= 0):
-                    producto = productos[posicion]
-                    producto = actualizar(encabezado, producto)
-                    productos[posicion] = producto
+                mensaje = "NO SE PERMITE DUPLICADOS " + codigoBuscar
+                if (posicion < 0):
+                    producto = insertar( codigoBuscar )
+                    productos.append(producto)
                     libreria.guardar(productos, nombreArchivo)
-                    #libreria.mostrar(encabezado, producto)
-                    mensaje = "FIN DE ACTUALIZAR "
-            libreria.mensajeEsperaSegundos( mensaje, 1)
-        case '5':
-            mensaje = "SIN REGISTROS PARA ELIMINAR " 
-            if (productos):
-                codigoBuscar = libreria.leerCadena("Código:", 10)
-                posicion = libreria.buscar(productos, codigoBuscar)
-                mensaje = "NO SE ENCONTRADO " + codigoBuscar
-                if (posicion >= 0):
-                    producto = productos[posicion]
-                    libreria.mostrar(encabezado, producto)
-                    respuesta = libreria.LeerCaracter("Seguro de Eliminar (Si-No):")
-                    if (respuesta.upper() == 'S'):
-                        productos.remove(productos[posicion])                        
+                    mensaje = "INSERTADO CORRECTAMENTE "
+                libreria.mensajeErrorEsperaSegundos(mensaje, 1)
+            case '2':
+                mensaje = "SIN REGISTROS PARA MOSTRAR " 
+                if (productos):
+                    libreria.listar(encabezado, productos)
+                    mensaje = "FIN DE LISTAR " 
+                libreria.mensajeEsperaEnter( mensaje )
+            case '3':
+                mensaje = "SIN REGISTROS PARA MOSTRAR " 
+                if (productos):
+                    codigoBuscar = libreria.leerCadena("Código:", 10)
+                    posicion = libreria.buscar(productos, codigoBuscar)
+                    mensaje = "NO SE ENCONTRADO " + codigoBuscar
+                    if (posicion >= 0):
+                        producto = productos[posicion]
+                        libreria.mostrar(encabezado, producto)
+                        mensaje = "FIN DE CONSULTAR "
+                libreria.mensajeEsperaEnter( mensaje )
+            case '4':
+                mensaje = "SIN REGISTROS PARA MOSTRAR " 
+                if (productos):
+                    codigoBuscar = libreria.leerCadena("Código:", 10)
+                    posicion = libreria.buscar(productos, codigoBuscar)
+                    mensaje = "NO SE ENCONTRADO " + codigoBuscar
+                    if (posicion >= 0):
+                        producto = productos[posicion]
+                        producto = actualizar(encabezado, producto)
+                        productos[posicion] = producto
                         libreria.guardar(productos, nombreArchivo)
-                        mensaje = " REGISTRO ELIMINADO  " + codigoBuscar
-            libreria.mensajeEsperaSegundos( mensaje, 1)
-        case '6':
-            break
-        case _:
-            print("OPCION NO VALIDA")
-        
+                        #libreria.mostrar(encabezado, producto)
+                        mensaje = "FIN DE ACTUALIZAR "
+                libreria.mensajeEsperaSegundos( mensaje, 1)
+            case '5':
+                mensaje = "SIN REGISTROS PARA ELIMINAR " 
+                if (productos):
+                    codigoBuscar = libreria.leerCadena("Código:", 10)
+                    posicion = libreria.buscar(productos, codigoBuscar)
+                    mensaje = "NO SE ENCONTRADO " + codigoBuscar
+                    if (posicion >= 0):
+                        producto = productos[posicion]
+                        libreria.mostrar(encabezado, producto)
+                        respuesta = libreria.LeerCaracter("Seguro de Eliminar (Si-No):")
+                        if (respuesta.upper() == 'S'):
+                            productos.remove(productos[posicion])                        
+                            libreria.guardar(productos, nombreArchivo)
+                            mensaje = " REGISTRO ELIMINADO  " + codigoBuscar
+                libreria.mensajeEsperaSegundos( mensaje, 1)
+            case '6':
+                break
+            case _:
+                print("OPCION NO VALIDA")
+
+if __name__ == "__main__":
+    menu()

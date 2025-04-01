@@ -94,75 +94,79 @@ anchoColumnas = [60, 70, 125, 100, 100, 100, 120, 50]
 clientes = libreria.cargar(clientes, nombreArchivo)
 
 #INICIO DEL PROGRAMA
-while True:
-    libreria.menuCrud( "GESTION CLIENTES" )
-    #opcion = input("OPCION: ")[0]
-    opcion = libreria.LeerCaracter("OPCION: ")
-    match opcion:
-        case '1':            
-            codigoBuscar = input("CÓDIGO: ").strip().upper()
-            posicion = libreria.buscar(clientes, codigoBuscar)
-            mensaje = "❌ YA EXISTE NO SE PERMITEN DUPLICADOS " + codigoBuscar
-            if (posicion < 0):
-                cliente = insertar( codigoBuscar )
-                clientes.append(cliente)
-                libreria.guardar(clientes, nombreArchivo)
-                mensaje = "\U00002705 INSERTADO CORRECTAMENTE"
-            libreria.mensajeEsperaSegundos( mensaje, 2 )
-        case '2':            
-            mensaje = " SIN INFORMACIÓN PARA LISTAR "
-            if (clientes):
-                libreria.listar(encabezado, clientes)
-                respuesta = libreria.LeerCaracter("Imprimir PDF (Si-No): ").upper()
-                if respuesta == 'S':
-                    libreria.generarPDF (encabezado, clientes, anchoColumnas, archivo_pdf)
-                    libreria.abrirPDF (archivo_pdf)
-                mensaje = "\U00002705 FIN DE LISTAR <ENTER> Continuar"
-            libreria.mensajeEsperaEnter( mensaje )
-        case '3':           
-            mensaje = " SIN INFORMACIÓN PARA CONSULTAR "
-            if (clientes):            
+def menu():
+    while True:
+        libreria.menuCrud( "GESTION CLIENTES" )
+        #opcion = input("OPCION: ")[0]
+        opcion = libreria.LeerCaracter("OPCION: ")
+        match opcion:
+            case '1':            
                 codigoBuscar = input("CÓDIGO: ").strip().upper()
                 posicion = libreria.buscar(clientes, codigoBuscar)
-                mensaje = "\u26A0 NO EXISTE EL REGISTRO " + codigoBuscar
-                if (posicion >= 0):
-                    cliente = clientes[posicion]
-                    libreria.mostrar(encabezado, cliente)
-                    mensaje = "\U00002705 FIN DE CONSULTAR <ENTER> Continuar"            
-            libreria.mensajeEsperaEnter( mensaje )
-        case '4':          
-            mensaje = " SIN INFORMACIÓN PARA ACTUALIZAR "
-            if (clientes):            
-                codigoBuscar = input("CÓDIGO: ").strip().upper()
-                posicion = libreria.buscar(clientes, codigoBuscar)
-                mensaje = "\u26A0 NO EXISTE EL REGISTRO " + codigoBuscar
-                if (posicion >= 0):
-                    cliente = clientes[posicion]
-                    cliente = actualizar (encabezado, cliente)    #retornar el registro actualizado
-                    clientes[posicion] = cliente
-                    libreria.guardar(clientes, nombreArchivo) 
-                    mensaje = "\U00002705 FIN DE ACTUALIZAR <ENTER> Continuar"            
-            libreria.mensajeEsperaEnter( mensaje )
-        case '5':          
-            mensaje = " SIN INFORMACIÓN PARA ELIMINAR "
-            if (clientes):            
-                codigoBuscar = input("CÓDIGO: ").strip().upper()
-                posicion = libreria.buscar(clientes, codigoBuscar)
-                mensaje = "\u26A0 NO EXISTE EL REGISTRO " + codigoBuscar
-                if (posicion >= 0):
-                    cliente = clientes[posicion]
-                    libreria.mostrar(encabezado, cliente)
-                    mensaje = "\U00002705 NO ELIMINADO - FIN DE ELIMINAR <ENTER> Continuar"                     
-                    respuesta = libreria.LeerCaracter("Seguro de Eliminar (Sí - No): ")
-                    if (respuesta.lower() == 's'):
-                        clientes.remove(clientes[posicion])     #o también con    del clientes[posicion] 
-                        libreria.guardar(clientes, nombreArchivo)                   
-                        mensaje = "\U00002705 REGISTRO ELIMINADO - FIN DE ELIMINAR <ENTER> Continuar"  
-            libreria.mensajeEsperaSegundos( mensaje, 2 )
-        case '6':
-            print("SALE DEL PROGRAMA ") #insertar()
-            libreria.mensajeEsperaSegundos( "INSERTADO", 1 )
-            break
-        case _:
-            libreria.mensajeEsperaSegundos( "OPCION NO VALIDA", 1 )
-            libreria.limpiarPantalla()
+                mensaje = "❌ YA EXISTE NO SE PERMITEN DUPLICADOS " + codigoBuscar
+                if (posicion < 0):
+                    cliente = insertar( codigoBuscar )
+                    clientes.append(cliente)
+                    libreria.guardar(clientes, nombreArchivo)
+                    mensaje = "\U00002705 INSERTADO CORRECTAMENTE"
+                libreria.mensajeEsperaSegundos( mensaje, 2 )
+            case '2':            
+                mensaje = " SIN INFORMACIÓN PARA LISTAR "
+                if (clientes):
+                    libreria.listar(encabezado, clientes)
+                    respuesta = libreria.LeerCaracter("Imprimir PDF (Si-No): ").upper()
+                    if respuesta == 'S':
+                        libreria.generarPDF (encabezado, clientes, anchoColumnas, archivo_pdf)
+                        libreria.abrirPDF (archivo_pdf)
+                    mensaje = "\U00002705 FIN DE LISTAR <ENTER> Continuar"
+                libreria.mensajeEsperaEnter( mensaje )
+            case '3':           
+                mensaje = " SIN INFORMACIÓN PARA CONSULTAR "
+                if (clientes):            
+                    codigoBuscar = input("CÓDIGO: ").strip().upper()
+                    posicion = libreria.buscar(clientes, codigoBuscar)
+                    mensaje = "\u26A0 NO EXISTE EL REGISTRO " + codigoBuscar
+                    if (posicion >= 0):
+                        cliente = clientes[posicion]
+                        libreria.mostrar(encabezado, cliente)
+                        mensaje = "\U00002705 FIN DE CONSULTAR <ENTER> Continuar"            
+                libreria.mensajeEsperaEnter( mensaje )
+            case '4':          
+                mensaje = " SIN INFORMACIÓN PARA ACTUALIZAR "
+                if (clientes):            
+                    codigoBuscar = input("CÓDIGO: ").strip().upper()
+                    posicion = libreria.buscar(clientes, codigoBuscar)
+                    mensaje = "\u26A0 NO EXISTE EL REGISTRO " + codigoBuscar
+                    if (posicion >= 0):
+                        cliente = clientes[posicion]
+                        cliente = actualizar (encabezado, cliente)    #retornar el registro actualizado
+                        clientes[posicion] = cliente
+                        libreria.guardar(clientes, nombreArchivo) 
+                        mensaje = "\U00002705 FIN DE ACTUALIZAR <ENTER> Continuar"            
+                libreria.mensajeEsperaEnter( mensaje )
+            case '5':          
+                mensaje = " SIN INFORMACIÓN PARA ELIMINAR "
+                if (clientes):            
+                    codigoBuscar = input("CÓDIGO: ").strip().upper()
+                    posicion = libreria.buscar(clientes, codigoBuscar)
+                    mensaje = "\u26A0 NO EXISTE EL REGISTRO " + codigoBuscar
+                    if (posicion >= 0):
+                        cliente = clientes[posicion]
+                        libreria.mostrar(encabezado, cliente)
+                        mensaje = "\U00002705 NO ELIMINADO - FIN DE ELIMINAR <ENTER> Continuar"                     
+                        respuesta = libreria.LeerCaracter("Seguro de Eliminar (Sí - No): ")
+                        if (respuesta.lower() == 's'):
+                            clientes.remove(clientes[posicion])     #o también con    del clientes[posicion] 
+                            libreria.guardar(clientes, nombreArchivo)                   
+                            mensaje = "\U00002705 REGISTRO ELIMINADO - FIN DE ELIMINAR <ENTER> Continuar"  
+                libreria.mensajeEsperaSegundos( mensaje, 2 )
+            case '6':
+                print("SALE DEL PROGRAMA ") #insertar()
+                libreria.mensajeEsperaSegundos( "INSERTADO", 1 )
+                break
+            case _:
+                libreria.mensajeEsperaSegundos( "OPCION NO VALIDA", 1 )
+                libreria.limpiarPantalla()
+
+if __name__ == "__main__":
+    menu()

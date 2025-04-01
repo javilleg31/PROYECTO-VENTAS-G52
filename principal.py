@@ -7,6 +7,9 @@ from tabulate import tabulate
 from colorama import Fore, Back, Style, init
 
 import vendedores as v
+import clientes as c
+import productos as p
+import facturas as f
 #-----------------------------------------------------------#
 #Función con las opciones del CRUD para cualquier entidad   #
 #-----------------------------------------------------------#
@@ -37,14 +40,11 @@ def main():
             case '1':
                 v.menu()
             case '2':
-                print("llamar a clientes")
-                input()
+                c.menu()
             case '3':
-                print("llamar a productos")
-                input()
+                p.menu()
             case '4':
-                print("llamar a vendedores")
-                input()
+                f.menu()
             case '5':
                 print("llamar a vendedores")
                 input()
