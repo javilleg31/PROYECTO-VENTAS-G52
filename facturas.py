@@ -41,10 +41,12 @@ def generar_pdf_factura(factura_info, cliente_info, detalle_factura):
     estilo = getSampleStyleSheet()
     titulo = Paragraph("<b>FACTURA DE VENTA</b>", estilo["Title"])
     elementos.append(titulo)
+    #elementos.extend(encabezado)
     elementos.append(Spacer(1, 12))
 
     # Sección: Datos de la Factura
-    tabla_factura = Table([factura_info], colWidths=[120, 200])
+    #["NRO.Factura", "Vendedor", "Cliente", "Fecha", "Forma Pago", "Estado", "Total IVA", "Total Descuentos", "Total Factura"] = 
+    tabla_factura = Table([encabezado] + [factura_info], colWidths=[70,60,60,100,100,50,90,90])
     tabla_factura.setStyle(TableStyle([
         ('GRID', (0, 0), (-1, -1), 1, colors.black),
         ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
@@ -59,7 +61,8 @@ def generar_pdf_factura(factura_info, cliente_info, detalle_factura):
     elementos.append(Spacer(1, 12))
 
     # Sección: Datos del Cliente
-    tabla_cliente = Table([cliente_info], colWidths=[120, 300])
+    #["Código", "Identificación", "Nombres", "Nacimiento", "Dirección", "Telefonos", "Mail", "Estado"] = 670
+    tabla_cliente = Table([encabezadoCliente] + [cliente_info], colWidths=[60, 70, 120,80,120, 100, 120, 50])
     tabla_cliente.setStyle(TableStyle([
         ('GRID', (0, 0), (-1, -1), 1, colors.black),
         ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
@@ -74,7 +77,9 @@ def generar_pdf_factura(factura_info, cliente_info, detalle_factura):
     elementos.append(Spacer(1, 12))
 
     # Sección: Detalle de la Factura
-    tabla_detalle = Table(detalle_factura, colWidths=[100, 120, 120, 60, 80, 120])
+    
+    #elementos.extend(encabezadoDetalle)
+    tabla_detalle = Table([encabezadoDetalle] + detalle_factura, colWidths=[100, 120, 120, 60, 80, 120])
     tabla_detalle.setStyle(TableStyle([
         ('GRID', (0, 0), (-1, -1), 1, colors.black),
         ('BACKGROUND', (0, 0), (-1, 0), colors.green),
