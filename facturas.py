@@ -45,7 +45,8 @@ def generar_pdf_factura(factura_info, cliente_info, detalle_factura):
     elementos.append(Spacer(1, 12))
 
     # Sección: Datos de la Factura
-    #["NRO.Factura", "Vendedor", "Cliente", "Fecha", "Forma Pago", "Estado", "Total IVA", "Total Descuentos", "Total Factura"] = 
+    encabezado = ["NRO.Factura", "Vendedor", "Cliente", "Fecha", "Forma Pago", "Estado", "Total IVA", "Total Descuentos", "Total Factura"] 
+    tabla_factura = Table([encabezado] + [factura_info], colWidths=[70,60,60,100,100,50,90,90])
     tabla_factura = Table([encabezado] + [factura_info], colWidths=[70,60,60,100,100,50,90,90])
     tabla_factura.setStyle(TableStyle([
         ('GRID', (0, 0), (-1, -1), 1, colors.black),
@@ -61,7 +62,7 @@ def generar_pdf_factura(factura_info, cliente_info, detalle_factura):
     elementos.append(Spacer(1, 12))
 
     # Sección: Datos del Cliente
-    #["Código", "Identificación", "Nombres", "Nacimiento", "Dirección", "Telefonos", "Mail", "Estado"] = 670
+    encabezadoCliente = ["Código", "Identificación", "Nombres", "Nacimiento", "Dirección", "Telefonos", "Mail", "Estado"]
     tabla_cliente = Table([encabezadoCliente] + [cliente_info], colWidths=[60, 70, 120,80,120, 100, 120, 50])
     tabla_cliente.setStyle(TableStyle([
         ('GRID', (0, 0), (-1, -1), 1, colors.black),
