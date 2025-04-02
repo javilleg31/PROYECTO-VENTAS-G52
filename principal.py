@@ -10,6 +10,7 @@ import vendedores as v
 import clientes as c
 import productos as p
 import facturas as f
+import reportes as r
 #-----------------------------------------------------------#
 #Función con las opciones del CRUD para cualquier entidad   #
 #-----------------------------------------------------------#
@@ -25,7 +26,7 @@ def menu(  ):
                      ["\t" + Back.YELLOW + "[2]" + Style.RESET_ALL + "  GESTIONAR CLIENTES    "],
                      ["\t" + Back.YELLOW + "[3]" + Style.RESET_ALL + "  GESTIONAR PRODUCTOS "],
                      ["\t" + Back.YELLOW + "[4]" + Style.RESET_ALL + "  GESTIONAR VENTAS"],
-                     ["\t" + Back.YELLOW + "[5]" + Style.RESET_ALL + "  REPORTES  "],
+                     ["\t" + Back.YELLOW + "[5]" + Style.RESET_ALL + "  REPORTES X FACTURAS"],
                      ["\t" + Back.YELLOW + "[6]" + Style.RESET_ALL + "  SALIR     "]
                      ],
                      tablefmt='fancy_grid',
@@ -46,7 +47,7 @@ def main():
             case '4':
                 f.menu()
             case '5':
-                print("llamar a vendedores")
+                r.menu()
                 input()
             case '6':
                 libreria.mensajeErrorEsperaSegundos("GRACIAS POR UTILIZARNOS", 1)
